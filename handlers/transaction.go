@@ -13,6 +13,7 @@ type CreateTransactionInput struct {
 	Type   string `json:"type"` // income / expense
 	Amount int    `json:"amount"`
 	Note   string `json:"note"`
+	Date   string `json:"date"`
 }
 
 func CreateTransaction(c *gin.Context) {
@@ -32,6 +33,7 @@ func CreateTransaction(c *gin.Context) {
 		Type:   input.Type,
 		Amount: input.Amount,
 		Note:   input.Note,
+		Date:   input.Date,
 	}
 
 	// simpan ke database
