@@ -28,6 +28,7 @@ func main() {
 	r.POST("/users", handlers.CreateUser)
 	r.POST("/transactions", handlers.CreateTransaction)
 	r.GET("/transactions", handlers.GetTransactions)
+	r.DELETE("/transactions/:id", handlers.DeleteTransaction)
 
 	port := os.Getenv("PORT")
 	if port == "" {

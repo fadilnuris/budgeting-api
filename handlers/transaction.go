@@ -69,3 +69,28 @@ func GetTransactions(c *gin.Context) {
 		"data": transactions,
 	})
 }
+
+func DeleteTransaction(c *gin.Context) {
+	id := c.Param("id")
+	var transaction models.Transaction
+
+	// Cek apakah transaksi ada
+	if err := config.DB.First(&transaction, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Transaction not found",
+		})
+		return
+	}
+
+	// Hapus transaksi
+	if err := config.DB.Delete(&transaction).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Transaction deleted successfully",
+	})
+}
