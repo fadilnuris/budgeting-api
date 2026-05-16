@@ -25,7 +25,8 @@ func main() {
 		})
 	})
 
-	r.POST("/users", handlers.CreateUser)
+	r.POST("/register", handlers.Register)
+	r.POST("/login", handlers.Login)
 	r.POST("/transactions", handlers.CreateTransaction)
 	r.GET("/transactions", handlers.GetTransactions)
 	r.DELETE("/transactions/:id", handlers.DeleteTransaction)
