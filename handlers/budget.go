@@ -9,10 +9,11 @@ import (
 )
 
 type SaveBudgetInput struct {
-	UserID uint                `json:"user_id"`
-	Month  string              `json:"month"`
-	Income int                 `json:"income"`
-	Items  []models.BudgetItem `json:"items"`
+	UserID     uint                    `json:"user_id"`
+	Month      string                  `json:"month"`
+	Income     int                     `json:"income"`
+	Items      []models.BudgetItem     `json:"items"`
+	Categories []models.BudgetCategory `json:"categories"`
 }
 
 func SaveBudget(c *gin.Context) {
@@ -39,6 +40,7 @@ func SaveBudget(c *gin.Context) {
 		plan.Income = input.Income
 		config.DB.Save(&plan)
 		config.DB.Where("plan_id = ?", plan.ID).Delete(&models.BudgetItem{})
+		config.DB.Where("plan_id = ?", plan.ID).Delete(&models.BudgetCategory{})
 	}
 
 	for i := range input.Items {
@@ -48,6 +50,18 @@ func SaveBudget(c *gin.Context) {
 	
 	if len(input.Items) > 0 {
 		if err := config.DB.Create(&input.Items).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
+	for i := range input.Categories {
+		input.Categories[i].PlanID = plan.ID
+		input.Categories[i].ID = 0
+	}
+	
+	if len(input.Categories) > 0 {
+		if err := config.DB.Create(&input.Categories).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -64,7 +78,7 @@ func GetBudget(c *gin.Context) {
 	month := c.Query("month")
 
 	var plan models.BudgetPlan
-	err := config.DB.Preload("Items").Where("user_id = ? AND month = ?", userID, month).First(&plan).Error
+	err := config.DB.Preload("Items").Preload("Categories").Where("user_id = ? AND month = ?", userID, month).First(&plan).Error
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -72,6 +86,16 @@ func GetBudget(c *gin.Context) {
 			"data":    nil,
 		})
 		return
+	}
+
+	if len(plan.Categories) == 0 {
+		defaults := []models.BudgetCategory{
+			{PlanID: plan.ID, Name: "Tabungan", Color: "blue"},
+			{PlanID: plan.ID, Name: "Kebutuhan", Color: "amber"},
+			{PlanID: plan.ID, Name: "Keinginan", Color: "pink"},
+		}
+		config.DB.Create(&defaults)
+		plan.Categories = defaults
 	}
 
 	c.JSON(http.StatusOK, gin.H{

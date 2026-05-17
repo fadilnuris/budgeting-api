@@ -13,7 +13,7 @@ import (
 func main() {
 	config.ConnectDB()
 
-	config.DB.AutoMigrate(&models.User{}, &models.Transaction{}, &models.BudgetPlan{}, &models.BudgetItem{})
+	config.DB.AutoMigrate(&models.User{}, &models.Transaction{}, &models.BudgetPlan{}, &models.BudgetItem{}, &models.BudgetCategory{})
 
 	r := gin.Default()
 
