@@ -13,7 +13,7 @@ import (
 func main() {
 	config.ConnectDB()
 
-	config.DB.AutoMigrate(&models.User{}, &models.Transaction{})
+	config.DB.AutoMigrate(&models.User{}, &models.Transaction{}, &models.BudgetPlan{}, &models.BudgetItem{})
 
 	r := gin.Default()
 
@@ -30,6 +30,12 @@ func main() {
 	r.POST("/transactions", handlers.CreateTransaction)
 	r.GET("/transactions", handlers.GetTransactions)
 	r.DELETE("/transactions/:id", handlers.DeleteTransaction)
+
+	r.GET("/budget", handlers.GetBudget)
+	r.POST("/budget", handlers.SaveBudget)
+	r.POST("/budget/items", handlers.AddBudgetItem)
+	r.PUT("/budget/items/:id", handlers.UpdateBudgetItem)
+	r.DELETE("/budget/items/:id", handlers.DeleteBudgetItem)
 
 	port := os.Getenv("PORT")
 	if port == "" {
