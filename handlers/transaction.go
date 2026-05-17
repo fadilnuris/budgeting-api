@@ -54,9 +54,15 @@ func CreateTransaction(c *gin.Context) {
 }
 
 func GetTransactions(c *gin.Context) {
+	userID := c.Query("user_id")
 	var transactions []models.Transaction
 
-	result := config.DB.Find(&transactions)
+	query := config.DB
+	if userID != "" {
+		query = query.Where("user_id = ?", userID)
+	}
+
+	result := query.Find(&transactions)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
