@@ -4,7 +4,7 @@ import "time"
 
 type BudgetPlan struct {
 	ID         uint             `gorm:"primaryKey" json:"id"`
-	UserID     uint             `json:"user_id"`
+	UserID     uint             `gorm:"uniqueIndex:idx_user_month" json:"user_id"`
 	Month      string           `gorm:"uniqueIndex:idx_user_month" json:"month"` // e.g., "2026-05"
 	Income     int              `json:"income"`
 	Items      []BudgetItem     `gorm:"foreignKey:PlanID" json:"items"`
