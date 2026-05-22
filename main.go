@@ -30,6 +30,7 @@ func main() {
 
 	r.POST("/register", handlers.Register)
 	r.POST("/login", handlers.Login)
+	r.GET("/profile", handlers.GetProfile)
 	r.POST("/transactions", handlers.CreateTransaction)
 	r.GET("/transactions", handlers.GetTransactions)
 	r.DELETE("/transactions/:id", handlers.DeleteTransaction)
