@@ -1,0 +1,4 @@
+# compiled binaries
+/budgeting-api
+/app
+.env
